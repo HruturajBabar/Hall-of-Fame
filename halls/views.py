@@ -17,7 +17,7 @@ YOUTUBE_API = 'AIzaSyDpRfzYKQY38CrN7ItT2-EGHr7Qd2DUJPs'
 # Create your views here.
 def home(request):
     recent_halls = Hall.objects.all().order_by('-id')[:3]
-    popular_halls = [Hall.objects.get(pk=2),Hall.objects.get(pk=3)]
+    popular_halls = [Hall.objects.get(pk=3),Hall.objects.get(pk=2),Hall.objects.get(pk=1)]
     return render(request, 'halls/home.html', {'recent_halls':recent_halls, 'popular_halls':popular_halls})
 
 @login_required
@@ -64,7 +64,7 @@ def video_search(request):
 
 class SignUp(generic.CreateView):
     form_class = UserCreationForm
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('dashboard')
     template_name = 'registration/signup.html'
 
     def form_valid(self, form):
@@ -75,7 +75,7 @@ class SignUp(generic.CreateView):
         return view
 
 #CRUD
-class CreateHall(generic.CreateView):
+class CreateHall(LoginRequiredMixin, generic.CreateView):
     model = Hall
     fields = ['title']
     template_name = 'halls/create.html'
@@ -90,18 +90,18 @@ class DetailHall(generic.DetailView):
     model = Hall
     template_name = 'halls/detail_hall.html'
 
-class UpdateHall(generic.UpdateView):
+class UpdateHall(LoginRequiredMixin, generic.UpdateView):
     model = Hall
     template_name = 'halls/update_hall.html'
     fields = ['title']
     success_url = reverse_lazy('dashboard')
 
-class DeleteHall(generic.DeleteView):
+class DeleteHall(LoginRequiredMixin, generic.DeleteView):
     model = Hall
     template_name = 'halls/delete_hall.html'
     success_url = reverse_lazy('dashboard')
 
-class DeleteVideo(generic.DeleteView):
+class DeleteVideo(LoginRequiredMixin, generic.DeleteView):
     model = Video
     template_name = 'halls/delete_video.html'
     success_url = reverse_lazy('dashboard')
